@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 
 
 // MongoDB code
-const { MongoClient, ServerApiVersion } = require('mongodb')
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -31,12 +31,29 @@ async function run() {
         
         const DB = client.db('SportNestDB');
         const allSportFacilities = DB.collection('facilities');
+        //const userData = DB.collection('user');
     
         // all facilities for all users who authenticated or not
         app.get('/facilities', async(req, res) => {
             const allFacilities = await allSportFacilities.find();
             const facilities = await allFacilities.toArray();
             res.send(facilities);
+        })
+
+        app.post('/facilities', async(req, res) => {
+            const facilityData = req.body;
+            const allFacilities = await allSportFacilities.insertOne(facilityData);
+            res.send(allFacilities);
+        })
+
+        // facilities details, update and delete
+        app.get('/facilities/:id', async(req, res) => {
+            const id = req.params;
+            const query = {
+                _id: new ObjectId(id)
+            }
+            const facility = await allSportFacilities.findOne(query);
+            res.send(facility);
         })
     
     
