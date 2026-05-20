@@ -5,6 +5,11 @@ const port = process.env.PORT || 5000
 const dotenv = require('dotenv')
 dotenv.config()
 const uri = process.env.MONGODB_URL
+// app.use(cors({
+//     // add this for local dev
+//     origin: 'http://localhost:3000',
+//     credentials: true,
+// }));
 app.use(cors())
 app.use(express.json())
 
