@@ -85,7 +85,7 @@ async function run() {
             const query = {
                 _id: new ObjectId(id)
             }
-            const facility = await allSportFacilities.findOne(query) //.toArray();
+            const facility = await allSportFacilities.findOne(query); //.toArray();
             res.send(facility);
         })
     
