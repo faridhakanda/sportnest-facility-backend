@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
 
 // MongoDB code
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
+const { createRemoteJWKSet, jwtVerify } = require('jose-cjs')
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -27,6 +28,32 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+
+
+const JWKS = createRemoteJWKSet(
+    new URL(`${process.env.CLIENT_URL}/api/auth/jwks`)
+)
+
+const verfiyToken = async(req, res, next) => {
+    const authToken = req?.headers.authorization;
+    if (!authToken) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const token = authToken.split(" ")[1]
+    if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+        const { payload } = await jwtVerify(token, JWKS)
+        console.log('payload: ', payload)
+        next()
+    } catch(err) {
+        return res.status(403).json({ message: "Forbidden" })
+    }
+}
+
+
 
 async function run() {
     try {
@@ -45,14 +72,14 @@ async function run() {
             res.send(facilities);
         })
 
-        app.post('/facilities', async(req, res) => {
+        app.post('/facilities', verfiyToken, async(req, res) => {
             const facilityData = req.body;
             const allFacilities = await allSportFacilities.insertOne(facilityData);
             res.send(allFacilities);
         })
-
+        
         // facilities details, update and delete
-        app.get('/facilities/:id', async(req, res) => {
+        app.get('/facilities/:id', verfiyToken, async(req, res) => {
             const id = req.params;
             const query = {
                 _id: new ObjectId(id)
