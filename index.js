@@ -43,7 +43,7 @@ const verfiyToken = async(req, res, next) => {
     if (!token) {
         return res.status(401).json({ message: "Unauthorized" });
     }
-
+    
     try {
         const { payload } = await jwtVerify(token, JWKS)
         console.log('payload: ', payload)
@@ -88,14 +88,28 @@ async function run() {
             res.send(facility);
         })
     
-        app.delete('/facilities/:email', verfiyToken, async(req, res) => {
-            const { email } = req.params;
-            const query = {
-                email: new ObjectId(email)
-            }
-            const facilityDeleteByCreator = await allSportFacilities.deleteOne(query);
-            res.send(facilityDeleteByCreator);
+
+        // my added facility
+        app.get('/my-facility/:userId', verfiyToken, async(req, res) => {
+            const { userId } = req.params; //.userId;
+            // const query = {
+            //     userId = new ObjectId(userId)
+            // }
+            const query = { userId: userId };
+            const myBooking = await allSportFacilities.find(query).toArray();
+            
+            res.send(myBooking);
+            
         })
+        
+        // app.delete('/facilities/:email', verfiyToken, async(req, res) => {
+        //     const { email } = req.params;
+        //     const query = {
+        //         email: new ObjectId(email)
+        //     }
+        //     const facilityDeleteByCreator = await allSportFacilities.deleteOne(query);
+        //     res.send(facilityDeleteByCreator);
+        // })
     
     
     } finally {
