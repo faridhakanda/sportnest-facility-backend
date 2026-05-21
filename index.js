@@ -80,7 +80,7 @@ async function run() {
         
         // facilities details, update and delete
         app.get('/facilities/:id', verfiyToken, async(req, res) => {
-            const { id } = req.params;
+            const { id } = req.params.id;
             const query = {
                 _id: new ObjectId(id)
             }
@@ -88,6 +88,14 @@ async function run() {
             res.send(facility);
         })
     
+        app.delete('/facilities/:email', verfiyToken, async(req, res) => {
+            const { email } = req.params;
+            const query = {
+                email: new ObjectId(email)
+            }
+            const facilityDeleteByCreator = await allSportFacilities.deleteOne(query);
+            res.send(facilityDeleteByCreator);
+        })
     
     
     } finally {
