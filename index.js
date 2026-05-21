@@ -63,6 +63,7 @@ async function run() {
         
         const DB = client.db('SportNestDB');
         const allSportFacilities = DB.collection('facilities');
+        const myBooking = DB.collection("booking");
         //const userData = DB.collection('user');
     
         // all facilities for all users who authenticated or not
@@ -80,36 +81,55 @@ async function run() {
         
         // facilities details, update and delete
         app.get('/facilities/:id', verfiyToken, async(req, res) => {
-            const id = req.params.id;
+            const { id } = req.params;
             const query = {
                 _id: new ObjectId(id)
             }
-            const facility = await allSportFacilities.findOne(query);
+            const facility = await allSportFacilities.findOne(query) //.toArray();
             res.send(facility);
         })
     
+        // user booking data CRUD, get, post, update, delete
+        app.get('/booking/:userId', verfiyToken, async(req, res) => {
+            const { userId } = req.params;
+            const query = { bookingUserId: userId }
+            const my_booking = await myBooking.find(query).toArray();
+            res.json(my_booking);
+        })
+        app.post('/booking', verfiyToken, async(req, res) => {
+            const bookingData = req.body;
+            const bookDataBody = await myBooking.insertOne(bookingData);
+            res.json(bookDataBody);
+        })
+        app.delete('/booking/:userId', verfiyToken, async(req, res) => {
+            const { userId } = req.params;
+            const query = { userId: userId }
+            const bookingResult = await myBooking.deleteOne(query);
+            res.json(bookingResult);
+        })
 
         // my added facility
         app.get('/my-facility/:userId', verfiyToken, async(req, res) => {
-            const { userId } = req.params; //.userId;
-            // const query = {
-            //     userId = new ObjectId(userId)
-            // }
+            const { userId } = req.params;
             const query = { userId: userId };
             const myBooking = await allSportFacilities.find(query).toArray();
-            
+            res.send(myBooking);   
+        })
+
+        app.patch('/my-facility/:userId', verfiyToken, async(req, res) => {
+            const { userId } = req.params;
+            const query = { userId: userId }
+            const modifiedValue = req.body;
+            const myBooking = await allSportFacilities.updateOne(query, {$set: modifiedValue});
             res.send(myBooking);
-            
         })
         
-        // app.delete('/facilities/:email', verfiyToken, async(req, res) => {
-        //     const { email } = req.params;
-        //     const query = {
-        //         email: new ObjectId(email)
-        //     }
-        //     const facilityDeleteByCreator = await allSportFacilities.deleteOne(query);
-        //     res.send(facilityDeleteByCreator);
-        // })
+        app.delete('/my-facility/:userId', verfiyToken, async(req, res) => {
+            const { userId } = req.params;
+            const query = { userId: userId }
+            const data = await allSportFacilities.deleteOne(query);
+            res.send(data);
+        })
     
     
     } finally {
