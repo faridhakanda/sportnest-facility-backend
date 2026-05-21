@@ -53,14 +53,13 @@ const verfiyToken = async(req, res, next) => {
     }
 }
 
-
-
 async function run() {
     try {
         // await client.connect();
         // await client.db('admin').command({ ping: 1 });
         // console.log("Pinged my deployment. SportNest successfully connected to MongoDB!");
         
+
         const DB = client.db('SportNestDB');
         const allSportFacilities = DB.collection('facilities');
         const myBooking = DB.collection("booking");
