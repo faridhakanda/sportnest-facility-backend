@@ -88,6 +88,15 @@ async function run() {
             const facility = await allSportFacilities.findOne(query); //.toArray();
             res.send(facility);
         })
+
+        app.get('/facilityDetails/:id', verfiyToken, async(req, res) => {
+            const { id } = req.params;
+            const query = {
+                _id: new ObjectId(id)
+            }
+            const facilityDetails = await allSportFacilities.findOne(query)
+            res.send(facilityDetails);
+        })
     
         // user booking data CRUD, get, post, update, delete
         app.get('/booking/:userId', verfiyToken, async(req, res) => {
@@ -117,7 +126,7 @@ async function run() {
             const myBooking = await allSportFacilities.find(query).toArray();
             res.send(myBooking);   
         })
-
+        
         app.patch('/my-facility/:userId', verfiyToken, async(req, res) => {
             const { userId } = req.params;
             const query = { userId: userId }
