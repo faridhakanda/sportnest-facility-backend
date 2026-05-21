@@ -80,7 +80,7 @@ async function run() {
         
         // facilities details, update and delete
         app.get('/facilities/:id', verfiyToken, async(req, res) => {
-            const id = req.params;
+            const { id } = req.params;
             const query = {
                 _id: new ObjectId(id)
             }
