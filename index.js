@@ -101,9 +101,11 @@ async function run() {
             const bookDataBody = await myBooking.insertOne(bookingData);
             res.json(bookDataBody);
         })
-        app.delete('/booking/:userId', verfiyToken, async(req, res) => {
-            const { userId } = req.params;
-            const query = { userId: userId }
+        app.delete('/booking/:id', verfiyToken, async(req, res) => {
+            const { id } = req.params;
+            const query = { 
+                _id: new ObjectId(id)
+             }
             const bookingResult = await myBooking.deleteOne(query);
             res.json(bookingResult);
         })
