@@ -66,6 +66,13 @@ async function run() {
         //const userData = DB.collection('user');
     
         // all facilities for all users who authenticated or not
+
+        app.get('/limited-facilities', async(req, res) => {
+            const allFacilities = await allSportFacilities.find().limit(1);
+            const facilities = await allFacilities.toArray();
+            res.send(facilities);
+        })
+
         app.get('/facilities', async(req, res) => {
             const allFacilities = await allSportFacilities.find();
             const facilities = await allFacilities.toArray();
